@@ -1,11 +1,14 @@
 server:
   port: 8081
+  shutdown: graceful
 spring:
   application:
     name: hmdp
+#  lifecycle:
+#    timeout-per-shutdown-phase: 30s
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/hmdp?useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://127.0.0.1:3306/hmdp?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
     username: root
     password: 1234
   redis:
@@ -13,12 +16,21 @@ spring:
     port: 6379
     #password: 123321
     database: 0
+#    timeout: 10000ms
     lettuce:
+#      shutdown-timeout: 1000ms
       pool:
         max-active: 10
         max-idle: 10
         min-idle: 1
         time-between-eviction-runs: 10s
+#      client-resources:
+#        command-timeout: 10s
+#  task:
+#    execution:
+#      shutdown:
+#        await-termination: true      # 等待任务完成
+#        await-termination-period: 30s # 最大等待时间
   jackson:
     default-property-inclusion: non_null # JSON处理时忽略非空字段
 mybatis-plus:

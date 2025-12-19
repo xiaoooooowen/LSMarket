@@ -147,6 +147,8 @@ public class CacheClient {
             }
             // 4.4.获取锁成功，根据id查询数据库
             r = dbFallback.apply(id);
+            //模拟重建延时
+            Thread.sleep(200);
             // 5.不存在，返回错误
             if (r == null) {
                 // 将空值写入redis
