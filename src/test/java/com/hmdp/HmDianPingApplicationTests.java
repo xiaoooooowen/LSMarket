@@ -38,6 +38,7 @@ class HmDianPingApplicationTests {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
+    // 500个线程池
     private ExecutorService es = Executors.newFixedThreadPool(500);
 
     @Test
