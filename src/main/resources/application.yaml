@@ -3,12 +3,12 @@ server:
   shutdown: graceful
 spring:
   application:
-    name: hmdp
+    name: lsmarket
 #  lifecycle:
 #    timeout-per-shutdown-phase: 30s
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/hmdp?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://127.0.0.1:3306/lsmarket?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
     username: root
     password: PaiSmart2025
   redis:
@@ -48,10 +48,10 @@ spring:
       group-id: lsmarket-order-consumer
       enable-auto-commit: false
 mybatis-plus:
-  type-aliases-package: com.hmdp.entity # 别名扫描包
+  type-aliases-package: com.lsmarket.entity # 别名扫描包
 logging:
   level:
-    com.hmdp: debug
+    com.lsmarket: debug
   pattern:
     dateformat: mm:ss.SSS
 mq:
@@ -100,3 +100,5 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+
+
