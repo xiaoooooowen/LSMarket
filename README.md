@@ -354,9 +354,9 @@ cd ling-shui-shi-ji
 ```bash
 # 创建MySQL数据库
 mysql -u root -p
-CREATE DATABASE hmdp DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE hmdp;
-source src/main/resources/db/hmdp.sql;
+CREATE DATABASE lsmarket DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE lsmarket;
+source src/main/resources/db/lsmarket.sql;
 ```
 
 #### 3. 配置Redis
@@ -376,7 +376,7 @@ redis-cli ping
 ```yaml
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/hmdp?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/lsmarket?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
     password: your_password
 
@@ -575,3 +575,4 @@ public class LoginInterceptor implements HandlerInterceptor {
 [回到顶部](#凌水市集---redis深度应用实战项目-)
 
 </div>
+
