@@ -33,6 +33,20 @@ spring:
 #        await-termination-period: 30s # 最大等待时间
   jackson:
     default-property-inclusion: non_null # JSON处理时忽略非空字段
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring:
+          json:
+            add:
+              type:
+                headers: false
+    consumer:
+      group-id: lsmarket-order-consumer
+      enable-auto-commit: false
 mybatis-plus:
   type-aliases-package: com.hmdp.entity # 别名扫描包
 logging:
@@ -40,3 +54,49 @@ logging:
     com.hmdp: debug
   pattern:
     dateformat: mm:ss.SSS
+mq:
+  type: redis
+  redis:
+    stream: stream.orders
+    group: g1
+    consumer: c1
+  kafka:
+    order-created-topic: seckill-order-created
+    order-retry-topic: seckill-order-retry
+    order-dlt-topic: seckill-order-dlt
+    max-retries: 3
+    base-backoff-millis: 200
+seckill:
+  limit:
+    enabled: true
+    voucher-capacity: 200
+    voucher-refill-per-second: 200
+    user-capacity: 1
+    user-refill-per-second: 1
+cache:
+  local:
+    shop:
+      enabled: true
+      maximum-size: 10000
+      expire-seconds: 60
+  warmup:
+    shop:
+      enabled: true
+      top-n: 100
+      cron: "0 */5 * * * ?"
+order:
+  consumer:
+    redis-workers: 1
+    kafka-concurrency: 2
+    await-termination-seconds: 30
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}

@@ -3,12 +3,16 @@ package com.hmdp.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.hmdp.config.LocalCacheProperties;
 import com.hmdp.dto.Result;
 import com.hmdp.entity.Shop;
 import com.hmdp.mapper.ShopMapper;
 import com.hmdp.service.IShopService;
 import com.hmdp.utils.CacheClient;
 import com.hmdp.utils.SystemConstants;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.GeoResult;
 import org.springframework.data.geo.GeoResults;
@@ -41,9 +45,30 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 
     @Resource
     private CacheClient cacheClient;
+    @Resource
+    private Cache<Long, Shop> shopLocalCache;
+    @Resource
+    private LocalCacheProperties localCacheProperties;
+    @Resource
+    private MeterRegistry meterRegistry;
 
     @Override
     public Result queryById(Long id) {
+        if (localCacheProperties.isEnabled()) {
+            Shop localShop = shopLocalCache.getIfPresent(id);
+            if (localShop != null) {
+                Counter.builder("lsmarket.cache.local.hit.total")
+                        .tag("cache", "shop")
+                        .register(meterRegistry)
+                        .increment();
+                return Result.ok(localShop);
+            }
+            Counter.builder("lsmarket.cache.local.miss.total")
+                    .tag("cache", "shop")
+                    .register(meterRegistry)
+                    .increment();
+        }
+
         // 解决缓存穿透
 //        Shop shop = cacheClient
 //                .queryWithPassThrough(CACHE_SHOP_KEY, id, Shop.class, this::getById, CACHE_SHOP_TTL, TimeUnit.MINUTES);
@@ -58,6 +83,9 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 
         if (shop == null) {
             return Result.fail("店铺不存在！");
+        }
+        if (localCacheProperties.isEnabled()) {
+            shopLocalCache.put(id, shop);
         }
         // 7.返回
         return Result.ok(shop);
@@ -74,6 +102,9 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
         updateById(shop);
         // 2.删除缓存
         stringRedisTemplate.delete(CACHE_SHOP_KEY + id);
+        if (localCacheProperties.isEnabled()) {
+            shopLocalCache.invalidate(id);
+        }
         return Result.ok();
     }
 

@@ -4,6 +4,8 @@ import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -22,11 +24,13 @@ import static com.hmdp.utils.RedisConstants.LOCK_SHOP_KEY;
 public class CacheClient {
 
     private final StringRedisTemplate stringRedisTemplate;
+    private final MeterRegistry meterRegistry;
 
     private static final ExecutorService CACHE_REBUILD_EXECUTOR = Executors.newFixedThreadPool(10);
 
-    public CacheClient(StringRedisTemplate stringRedisTemplate) {
+    public CacheClient(StringRedisTemplate stringRedisTemplate, MeterRegistry meterRegistry) {
         this.stringRedisTemplate = stringRedisTemplate;
+        this.meterRegistry = meterRegistry;
     }
 
     public void set(String key, Object value, Long time, TimeUnit unit) {
@@ -49,14 +53,17 @@ public class CacheClient {
         String json = stringRedisTemplate.opsForValue().get(key);
         // 2.判断是否存在
         if (StrUtil.isNotBlank(json)) {
+            incrementCacheCounter("lsmarket.cache.redis.hit.total", keyPrefix);
             // 3.存在，直接返回
             return JSONUtil.toBean(json, type);
         }
         // 判断命中的是否是空值
         if (json != null) {
+            incrementCacheCounter("lsmarket.cache.redis.hit.total", keyPrefix);
             // 返回一个错误信息
             return null;
         }
+        incrementCacheCounter("lsmarket.cache.redis.miss.total", keyPrefix);
 
         // 4.不存在，根据id查询数据库
         R r = dbFallback.apply(id);
@@ -79,9 +86,11 @@ public class CacheClient {
         String json = stringRedisTemplate.opsForValue().get(key);
         // 2.判断是否存在
         if (StrUtil.isBlank(json)) {
+            incrementCacheCounter("lsmarket.cache.redis.miss.total", keyPrefix);
             // 3.存在，直接返回
             return null;
         }
+        incrementCacheCounter("lsmarket.cache.redis.hit.total", keyPrefix);
         // 4.命中，需要先把json反序列化为对象
         RedisData redisData = JSONUtil.toBean(json, RedisData.class);
         R r = JSONUtil.toBean((JSONObject) redisData.getData(), type);
@@ -124,14 +133,17 @@ public class CacheClient {
         String shopJson = stringRedisTemplate.opsForValue().get(key);
         // 2.判断是否存在
         if (StrUtil.isNotBlank(shopJson)) {
+            incrementCacheCounter("lsmarket.cache.redis.hit.total", keyPrefix);
             // 3.存在，直接返回
             return JSONUtil.toBean(shopJson, type);
         }
         // 判断命中的是否是空值
         if (shopJson != null) {
+            incrementCacheCounter("lsmarket.cache.redis.hit.total", keyPrefix);
             // 返回一个错误信息
             return null;
         }
+        incrementCacheCounter("lsmarket.cache.redis.miss.total", keyPrefix);
 
         // 4.实现缓存重建
         // 4.1.获取互斥锁
@@ -175,5 +187,12 @@ public class CacheClient {
 
     private void unlock(String key) {
         stringRedisTemplate.delete(key);
+    }
+
+    private void incrementCacheCounter(String metricName, String keyPrefix) {
+        Counter.builder(metricName)
+                .tag("cache", keyPrefix)
+                .register(meterRegistry)
+                .increment();
     }
 }
