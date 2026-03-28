@@ -5,7 +5,7 @@
  Source Server Type    : MySQL
  Source Server Version : 50622
  Source Host           : localhost:3306
- Source Schema         : hmdp2
+ Source Schema         : lsmarket
 
  Target Server Type    : MySQL
  Target Server Version : 50622
@@ -264,3 +264,4 @@ CREATE TABLE `tb_voucher_order`  (
 -- ----------------------------
 
 SET FOREIGN_KEY_CHECKS = 1;
+
