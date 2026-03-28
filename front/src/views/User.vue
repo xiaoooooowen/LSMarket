@@ -32,7 +32,7 @@
         <el-card class="sign-card">
           <div class="sign-header">
             <h4>签到统计</h4>
-            <el-tag>{{ signCount }} 天</el-tag>
+            <el-tag>{{ signCountValue }} 天</el-tag>
           </div>
           <el-button 
             type="primary" 
@@ -81,7 +81,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores/user'
-import { getUserInfo, sign, isSign, signCount } from '@/api/user'
+import { getUserInfo, sign, isSign, signCount as getSignCount } from '@/api/user'
 import { getBlogOfUser } from '@/api/blog'
 import type { UserInfo } from '@/types/user'
 import type { Blog } from '@/types/blog'
@@ -95,8 +95,6 @@ const hasSigned = ref(false)
 const signCountValue = ref(0)
 const activeTab = ref('blogs')
 const myBlogs = ref<Blog[]>([])
-
-const signCount = signCountValue
 
 function getFirstImage(images: string) {
   if (!images) return 'https://picsum.photos/200/150?random=1'
@@ -127,14 +125,14 @@ onMounted(async () => {
     try {
       userInfo.value = await getUserInfo(userStore.userInfo.id)
       const blogs = await getBlogOfUser(userStore.userInfo.id, 1)
-      myBlogs.value = blogs.records
+      myBlogs.value = blogs
     } catch {
       console.log('Failed to load user info')
     }
     
     try {
       hasSigned.value = await isSign()
-      signCountValue.value = await signCount()
+      signCountValue.value = await getSignCount()
     } catch {
       console.log('Failed to load sign info')
     }

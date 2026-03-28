@@ -13,5 +13,6 @@ export function getFollowCommons(followUserId: number) {
 }
 
 export function getFollowList() {
-  return request.get('/follow/list')
+  // Backend has no /follow/list endpoint yet.
+  return Promise.resolve([])
 }

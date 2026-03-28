@@ -66,8 +66,8 @@
           <div class="seckill-info">
             <h4>{{ item.title }}</h4>
             <div class="price">
-              <span class="current">¥{{ item.payValue / 100 }}</span>
-              <span class="original">¥{{ item.actualValue / 100 }}</span>
+              <span class="current">¥{{ (item.payValue || 0) / 100 }}</span>
+              <span class="original">¥{{ (item.actualValue || 0) / 100 }}</span>
             </div>
             <el-progress :percentage="(item.stock || 0) / 100 * 100" :show-text="false" />
             <p class="stock">剩余 {{ item.stock }} 份</p>
@@ -118,7 +118,7 @@ onMounted(async () => {
   await shopStore.fetchShopTypes()
   try {
     const res = await getBlogList(1)
-    hotBlogs.value = res.records.slice(0, 4)
+    hotBlogs.value = res.slice(0, 4)
   } catch {
     console.log('Failed to load blogs')
   }

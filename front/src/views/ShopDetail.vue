@@ -81,14 +81,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { getShopById } from '@/api/shop'
 import { getVoucherList } from '@/api/voucher'
 import type { Shop } from '@/types/shop'
 import type { Voucher } from '@/types/voucher'
 
 const route = useRoute()
-const router = useRouter()
 
 const shop = ref<Shop | null>(null)
 const vouchers = ref<Voucher[]>([])

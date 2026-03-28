@@ -13,6 +13,6 @@ export function seckillVoucher(voucherId: number) {
   return request.post<VoucherOrder>(`/voucher-order/seckill/${voucherId}`)
 }
 
-export function getVoucherOrder(voucherId: number) {
-  return request.get<VoucherOrder>(`/voucher-order/${voucherId}`)
+export function getVoucherOrder(_voucherId: number) {
+  return Promise.reject(new Error('订单查询接口暂未开放'))
 }

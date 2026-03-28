@@ -99,7 +99,7 @@ onMounted(async () => {
   try {
     userInfo.value = await getUserInfo(userId.value)
     const res = await getBlogOfUser(userId.value, 1)
-    blogs.value = res.records
+    blogs.value = res
     
     if (userStore.isLoggedIn && userStore.userInfo?.id !== userId.value) {
       isFollowing.value = await isFollow(userId.value)

@@ -102,7 +102,7 @@ const rules = {
   ]
 }
 
-function handleUploadSuccess(response: any, file: UploadFile) {
+function handleUploadSuccess(response: any, _file: UploadFile) {
   if (response.success) {
     const images = form.images ? form.images.split(',') : []
     images.push(response.data)
@@ -126,7 +126,7 @@ async function searchShops(query: string) {
   searching.value = true
   try {
     const res = await getShopList(undefined, 1, 20)
-    shopOptions.value = res.records.filter(shop => 
+    shopOptions.value = res.records.filter((shop: Shop) =>
       shop.name.toLowerCase().includes(query.toLowerCase())
     )
   } catch {

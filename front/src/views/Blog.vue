@@ -106,8 +106,8 @@ async function loadBlogs() {
   loading.value = true
   try {
     const res = await getBlogList(currentPage.value)
-    blogs.value = res.records
-    total.value = res.records.length * 10
+    blogs.value = res
+    total.value = res.length * 10
   } catch {
     console.log('Failed to load blogs')
   } finally {

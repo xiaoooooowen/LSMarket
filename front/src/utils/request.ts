@@ -1,4 +1,5 @@
 import axios from 'axios'
+import type { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { ElMessage } from 'element-plus'
 import router from '@/router'
 import type { Result } from '@/types/common'
@@ -22,10 +23,10 @@ request.interceptors.request.use(
 )
 
 request.interceptors.response.use(
-  response => {
+  (response: AxiosResponse<Result<unknown>>) => {
     const res = response.data as Result
     if (res.success) {
-      return res.data
+      return response
     } else {
       ElMessage.error(res.errorMessage || '请求失败')
       return Promise.reject(new Error(res.errorMessage || '请求失败'))
@@ -43,4 +44,23 @@ request.interceptors.response.use(
   }
 )
 
-export default request
+function unwrap<T>(promise: Promise<AxiosResponse<Result<T>>>) {
+  return promise.then((response) => response.data.data)
+}
+
+const http = {
+  get<T>(url: string, config?: AxiosRequestConfig) {
+    return unwrap<T>(request.get(url, config))
+  },
+  post<T>(url: string, data?: unknown, config?: AxiosRequestConfig) {
+    return unwrap<T>(request.post(url, data, config))
+  },
+  put<T>(url: string, data?: unknown, config?: AxiosRequestConfig) {
+    return unwrap<T>(request.put(url, data, config))
+  },
+  delete<T>(url: string, config?: AxiosRequestConfig) {
+    return unwrap<T>(request.delete(url, config))
+  }
+}
+
+export default http

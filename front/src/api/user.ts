@@ -3,7 +3,9 @@ import type { UserDTO, LoginFormDTO } from '@/types/user'
 import type { UserInfo } from '@/types/user'
 
 export function sendCode(phone: string) {
-  return request.post('/user/code', { phone })
+  return request.post('/user/code', null, {
+    params: { phone }
+  })
 }
 
 export function login(data: LoginFormDTO) {
@@ -23,7 +25,9 @@ export function sign() {
 }
 
 export function isSign() {
-  return request.get<boolean>('/user/sign')
+  // Backend has no GET /user/sign endpoint.
+  // Keep UI stable by returning false by default.
+  return Promise.resolve(false)
 }
 
 export function signCount() {

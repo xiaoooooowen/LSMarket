@@ -3,7 +3,7 @@ import type { Blog } from '@/types/blog'
 import type { ScrollResult } from '@/types/common'
 
 export function getBlogList(current = 1) {
-  return request.get<{ records: Blog[] }>('/blog/hot', {
+  return request.get<Blog[]>('/blog/hot', {
     params: { current }
   })
 }
@@ -13,8 +13,8 @@ export function getBlogById(id: number) {
 }
 
 export function getBlogOfUser(userId: number, current = 1) {
-  return request.get<{ records: Blog[] }>(`/blog/of/user`, {
-    params: { userId, current }
+  return request.get<Blog[]>(`/blog/of/user`, {
+    params: { id: userId, current }
   })
 }
 
@@ -32,12 +32,11 @@ export function saveBlog(blog: Partial<Blog>) {
   return request.post<Blog>('/blog', blog)
 }
 
-export function getBlogComments(id: number, current = 1) {
-  return request.get(`/blog/comments/${id}`, {
-    params: { current }
-  })
+export function getBlogComments(_id: number, _current = 1) {
+  // Backend comments endpoints are not implemented yet.
+  return Promise.resolve([])
 }
 
-export function addComment(blogId: number, content: string, parentId?: number) {
-  return request.post('/blog/comment', { blogId, content, parentId })
+export function addComment(_blogId: number, _content: string, _parentId?: number) {
+  return Promise.reject(new Error('评论接口暂未开放'))
 }

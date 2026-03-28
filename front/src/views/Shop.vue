@@ -66,6 +66,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useShopStore } from '@/stores/shop'
 import { getShopList } from '@/api/shop'
 import type { Shop } from '@/types/shop'
@@ -74,7 +75,7 @@ const router = useRouter()
 const route = useRoute()
 const shopStore = useShopStore()
 
-const { shopTypes, currentTypeId } = shopStore
+const { shopTypes, currentTypeId } = storeToRefs(shopStore)
 
 const shops = ref<Shop[]>([])
 const loading = ref(false)
@@ -96,7 +97,8 @@ function selectType(typeId: number | null) {
 async function loadShops() {
   loading.value = true
   try {
-    const res = await getShopList(currentTypeId.value || undefined, currentPage.value, pageSize.value)
+    const typeId = currentTypeId.value === null ? undefined : currentTypeId.value
+    const res = await getShopList(typeId, currentPage.value, pageSize.value)
     shops.value = res.records
     total.value = res.total
   } catch {

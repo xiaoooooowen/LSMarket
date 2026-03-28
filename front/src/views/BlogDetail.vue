@@ -213,7 +213,7 @@ async function handleComment() {
 async function loadComments() {
   try {
     const res = await getBlogComments(blogId.value, 1)
-    comments.value = res.records || []
+    comments.value = Array.isArray(res) ? res : []
   } catch {
     console.log('Failed to load comments')
   }
