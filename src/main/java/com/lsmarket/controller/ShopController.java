@@ -16,7 +16,6 @@ import javax.annotation.Resource;
  * 前端控制器
  * </p>
  *
- * @author 虎哥
  */
 @RestController
 @RequestMapping("/shop")
@@ -94,4 +93,5 @@ public class ShopController {
         return Result.ok(page.getRecords());
     }
 }
+
 

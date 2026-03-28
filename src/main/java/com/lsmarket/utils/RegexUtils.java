@@ -3,7 +3,6 @@ package com.lsmarket.utils;
 import cn.hutool.core.util.StrUtil;
 
 /**
- * @author 虎哥
  */
 public class RegexUtils {
     /**
@@ -40,4 +39,5 @@ public class RegexUtils {
         return !str.matches(regex);
     }
 }
+
 

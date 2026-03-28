@@ -21,7 +21,6 @@ import javax.servlet.http.HttpSession;
  * 前端控制器
  * </p>
  *
- * @author 虎哥
  */
 @Slf4j
 @RestController
@@ -106,3 +105,4 @@ public class UserController {
         return userService.signCount();
     }
 }
+

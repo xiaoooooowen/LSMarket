@@ -1,7 +1,6 @@
 package com.lsmarket.utils;
 
 /**
- * @author 虎哥
  */
 public abstract class RegexPatterns {
     /**
@@ -22,4 +21,5 @@ public abstract class RegexPatterns {
     public static final String VERIFY_CODE_REGEX = "^[a-zA-Z\\d]{6}$";
 
 }
+
 
